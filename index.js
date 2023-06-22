@@ -1,13 +1,22 @@
-var http = require('http');
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const keys = require("./config/keys");
 
-var server = http.createServer(function(request, response) {
+require("./services/cache");
+require("./models/Book");
+require('dotenv').config();
+const app = express();
+app.use(bodyParser.json());
 
-    response.writeHead(200, {"Content-Type": "text/plain"});
-    response.end("Hello World!");
-
+mongoose.connect(keys.mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 });
 
-var port = 80;
-server.listen(port);
+require("./routes/bookRoutes")(app);
 
-console.log("Server running at http://localhost:%d", port);
+const PORT = process.env.PORT;
+app.listen(PORT, () => {
+  console.log(`Listening on port`, PORT);
+});
